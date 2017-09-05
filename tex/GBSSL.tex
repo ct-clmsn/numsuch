@@ -1,0 +1,138 @@
+\documentclass{article}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+
+\begin{document}
+\title{Algorithms for Graph-Based Supervised Learning}
+\author{Brian Dolan}
+\maketitle
+Hello
+
+\section{Modified Adsorption}
+
+This routine is described in Talukdar below.
+
+\subsection{Prerequisites}
+
+I'm looking for a good parallelization strategy for this function.  I'm going to expand it as far as I can to see if something presents itself.  We are aiming to find $c_v$ and $d_v$ for each vertex in the graph.  First, let's define the column sum $m(x)$.  Since $W$ is symmetric, this is also the row sums.  In the code, they are $\mbox{rowSum}$
+\begin{eqnarray}
+m(x) &=& \sum_u W_{u,x} \\
+  &=& \sum_u W_{x,u} \\
+  &=& \mbox{rowSum}(x) \\
+l(x) &=& \sum_u W_{u,x} \log W_{u,x} \\
+pc(v) &=& p_x^{cont} \sum_x p_x^{cont} W_{xv} \\
+  &=& \mbox{pcntW}(v)
+\end{eqnarray}
+
+Okay, check my math here...
+
+\begin{eqnarray}
+p(a|b) &=& \frac{W_{a,b}}{\sum_u W_{u,b}} \\
+  &=& \frac{W_{a,b}}{m(b)} \\
+H(x) &=& -\sum_y p(y|x) \log p(y|x) \\
+&=& -\sum _y \left( \frac{W_{y,x}} {\sum_u W_{u,x} } \right) \log \left(  \frac{W_{y,x}}{\sum_u W_{u,x} } \right) \\
+&=& -\sum _y \left( \frac{W_{y,x}} {m(x) } \right) \log \left(  \frac{W_{y,x}}{m(x) } \right) \\
+&=& \frac{-1}{m(x)} \sum_y W_{y,x} \left[ \log W_{y,x} - \log m(x) \right] \\
+&=& \frac{-1}{m(x)} \left[ \sum_y W_{y,x} \log W_{y,x} -  \sum_y W_{y,x} \log m(x) \right] \\
+&=& \frac{-1}{m(x)} \left[ \sum_y W_{y,x} \log W_{y,x} - m(x) \log m(x) \right] \\
+&=& \log m(x) -  \frac{1}{m(x)}\sum_y W_{y,x} \log W_{y,x} \\
+&=& \log m(x) - \frac{l(x)}{m(x)}
+\end{eqnarray}
+
+Next we have the smoothing function for a given $\beta$
+
+\begin{eqnarray}
+f(x) &=& \frac{\log \beta}{\log(\beta + e^{x})} \\ 
+c_x &=& f(H(x)) \\
+&=& \log \beta \left[ \log \right( \beta + e^{H(x)} \left)\right]^{-1} \\
+d_x &=& (1-c_x) \sqrt{H(x)} \\
+z_x &=& \max( c_x + d_x, 1)
+\end{eqnarray}
+
+Given these values, the authors define
+
+\[
+p_v^{cont} = \frac{c_v}{z_v}, \vspace{1mm} p_v^{inj} = \frac{d_v}{z_v}, \vspace{1mm} p_v^{abnd} = 1-p_v^{cont}  - p_v^{inj}
+\]
+
+\subsection{Algorithm 3: Modified Adsoprtion}
+
+Taken from the book reference below.  This will optimize
+
+\[
+C(\hat Y) = \sum_l \left [ \mu_1 \left(Y_l - \hat Y_l \right)^T S\left(Y_l -\hat Y_l\right) + \mu_2 \hat Y_l^T L \hat Y_l + \mu_3 \| \hat Y_l - R_l \|^2 \right]
+\]
+
+where $\mu_{1,2,3}$ are "hyperparameters that determine the relative importance of each term" in $C$.  So Dealer's Choice on $\mu$. $Y_l$ and $R_l$ are the $l^{th}$ columns of $Y$ and $R$.   The choice of convergence criteria is unclear at the moment. 
+
+\subsubsection{Regularization}
+
+$R$ is used to provide target for unlabeled vertices, essentially a default value.  In the slide deck (but not the lecture notes) they suggest you set $R_v = p_v^{abdn}$ if $v$ is unlabeled.
+
+I've asked Dr. Talukdar for guidance on this selection and I'm awaiting his response. 
+
+\begin{algorithm}
+\caption{One expression of the Modified Adsoprtion Algorithm}
+\begin{algorithmic}[1]
+\caption{Modified Adsoprtion}\label{euclid}
+	\Procedure{Input:}{}
+	  \State $G = (V,E,W), M, R$
+	  \State Labels = $Y_v \in \mathcal{R}^{m+1}$ for $v \in V$
+	  \State Probabilities $p_v^{inj}, p_v^{cont}, p_v^{abnd}$ for $v \in V$
+	  \State Constants $\mu_1, \mu_1, \mu_3$
+	\EndProcedure
+	\Procedure{Output:}{}
+	  \State $\hat Y_v$ for $v \in V$
+	\EndProcedure
+	\Procedure{Iterate}{}
+	  \State $\hat Y_v \gets Y_v$ for $v \in V$ [Initialization]
+	  \State $M_{vv} \gets \mu_1 \times p_v^{inj} + \mu_2 \times p_v^{cont} \times \sum_u W_{vu} + \mu_3$
+	\While{Not Converged}
+	  \State $D_v \gets \sum_x \left(p_v^{cont} W_{vx} + p_x^{cont} W_{xv}\right) \hat Y_x $
+	  \ForAll{$v \in V$}
+	    \State $\hat Y \gets \frac{1}{M_{vv}} \left(\mu_1 \times p_v^{inj} \times Y_v + \mu_2 \times D_v + \mu_3 \times p_v^{abnd} \times R_v \right) $ 
+	  \EndFor
+	\EndWhile
+	\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Taking a closer look, remember $W^T=W$ so
+
+\begin{eqnarray}
+D_v &\gets& \sum_x \left(p_v^{cont} W_{vx} + p_x^{cont} W_{xv}\right) \hat Y_x \\
+ &=& \sum_x \left(p_v^{cont} W_{vx} + p_x^{cont} W_{vx}\right) \hat Y_x
+\end{eqnarray}
+
+\section{References}
+BibTeX is a pain, so for right now I'm going to do
+
+\begin{verbatim}
+@article{doi:10.2200/S00590ED1V01Y201408AIM029,
+author = {  Amarnag 
+  Subramanya  and   Partha Pratim 
+  Talukdar },
+title = {Graph-Based Semi-Supervised Learning},
+journal = {Synthesis Lectures on Artificial Intelligence and Machine Learning},
+volume = {8},
+number = {4},
+pages = {1-125},
+year = {2014},
+doi = {10.2200/S00590ED1V01Y201408AIM029},
+
+URL = { 
+        https://doi.org/10.2200/S00590ED1V01Y201408AIM029
+    
+},
+eprint = { 
+        https://doi.org/10.2200/S00590ED1V01Y201408AIM029
+    
+}
+
+}
+\end{verbatim}
+
+\end{document}

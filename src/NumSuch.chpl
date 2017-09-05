@@ -11,6 +11,9 @@
 
  */
 module NumSuch{
+  use Core,
+      LinearAlgebra;
+
   proc main() {
     writeln("don't expect much...");
   }

@@ -99,3 +99,18 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# LaTex files
+*.aux
+*.dvi
+*.out
+
+# Mac stuff
+*.DS_Store
+
+# Mason file
+Mason.lock
+
+# Specific, large data sets
+webkb_labels.txt
+webkb_vectors.mtx
