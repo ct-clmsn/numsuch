@@ -18,3 +18,8 @@ test: mlp-test.chpl
 	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o mlp-test $<
 	./mlp-test
 	rm mlp-test
+
+core: core-test.chpl
+	$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o core-test $<
+	./core-test
+	rm core-test
