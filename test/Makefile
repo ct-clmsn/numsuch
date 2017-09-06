@@ -20,6 +20,6 @@ test: mlp-test.chpl
 	rm mlp-test
 
 core: core-test.chpl
-	$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o core-test $<
+	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o core-test $<
 	./core-test
 	rm core-test

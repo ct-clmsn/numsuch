@@ -39,7 +39,7 @@ module Core {
            }
          }
          //names.push_back(fields[1]);
-         writeln(ldom);
+         //writeln(ldom);
          ldom = {1..ldom.last+1};
          //names.push_back(fields[1]);
          names[ldom.last] = fields[1];
@@ -73,9 +73,11 @@ module Core {
     var Xii: [Xdom.dim(1)] real;
     [i in Xdom.dim(1)] Xii[i] = dot(X[i,..], X[i,..]);
 
-    forall i in Xdom.dim(1) {
+    //forall i in Xdom.dim(1) {
+    forall i in Xdom.dim(1).first..Xdom.dim(1).last {
       const x1 = Xii[i];
-      for j in i+1..Xdom.dim(1).size {
+      //for j in i+1..Xdom.dim(1).size {
+      for j in i+1..Xdom.dim(1).last {
         // Do cosim
         const x2 = Xii[j];
         const c = 1 - dot(X[i,..], X[j,..]) / (x1 * x2);
@@ -107,13 +109,15 @@ module Core {
 
     // Pre-compute norms
     var Xii: [Xdom.dim(1)] real;
-    var Yii: [Xdom.dim(1)] real;
+    var Yii: [Ydom.dim(1)] real;
     [i in Xdom.dim(1)] Xii[i] = dot(X[i,..], X[i,..]);
     [i in Ydom.dim(1)] Yii[i] = dot(Y[i,..], Y[i,..]);
 
-    forall i in Xdom.dim(1) {
+    //forall i in Xdom.dim(1) {
+    forall i in Xdom.dim(1).first..Xdom.dim(1).last {
       const x2 = Xii[i];
-      for j in i+1..Xdom.dim(1).size {
+      //for j in i+1..Xdom.dim(1).size {
+      for j in i+1..Ydom.dim(1).last {
         // Do cosim
         const y2 = Yii[j];
         const c = 1 - dot(X[i,..], Y[j,..]) / (y2 * x2);
