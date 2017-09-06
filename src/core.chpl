@@ -117,12 +117,12 @@ module Core {
     forall i in Xdom.dim(1).first..Xdom.dim(1).last {
       const x2 = Xii[i];
       //for j in i+1..Xdom.dim(1).size {
-      for j in i+1..Ydom.dim(1).last {
+      // Cannot take advantage of symmetry, must walk the whole thing :(
+      for j in Ydom.dim(1).first..Ydom.dim(1).last {
         // Do cosim
         const y2 = Yii[j];
         const c = 1 - dot(X[i,..], Y[j,..]) / (y2 * x2);
         cosDist[i,j] = c;
-        cosDist[j,i] = c;
       }
     }
     return cosDist;

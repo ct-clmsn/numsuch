@@ -27,6 +27,7 @@ var Y = Matrix(
   [0.2, 2.0, 0.3, 0.0, 0.0],
   [0.0, 0.3, 3.0, 0.9, 0.6],
   [0.7, 0.0, 0.9, 2.0, 0.0],
+  [0.7, 0.0, 0.9, 2.0, 0.0],
   [0.1, 0.0, 0.6, 0.0, 2.0]
 );
 
@@ -40,6 +41,7 @@ writeln("  elapsed time %n".format(t.elapsed()));
 
 writeln("cosineDistance(X,Y)");
 t.start();
-V = cosineDistance(X);
+var V2 = cosineDistance(X,Y);
+writeln(V2);
 t.stop();
 writeln("  elapsed time %n".format(t.elapsed()));
