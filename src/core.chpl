@@ -52,6 +52,15 @@ module Core {
          nRows += 1;
       }
     }
+
+    proc fromMatrix(y:[]) {
+      writeln(y.domain.first);
+      dataDom = {1..#y.shape[1], 1..#y.shape[2]};
+      ref tmpD = data.reindex(y.domain);
+      for ij in y.domain {
+        tmpD[ij] = y[ij];
+      }
+    }
   }
 
   /*

@@ -45,3 +45,9 @@ var V2 = cosineDistance(X,Y);
 writeln(V2);
 t.stop();
 writeln("  elapsed time %n".format(t.elapsed()));
+
+// Test LabelMatrix.fromMatrix()
+var L = new LabelMatrix();
+writeln("Loading L from matrix.");
+L.fromMatrix(Y);
+writeln(L.data);

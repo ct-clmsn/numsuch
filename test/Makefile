@@ -6,7 +6,7 @@ LIBS=-L${ZMQ_BASE}/lib -lzmq -L${BLAS_HOME}/lib -lblas
 MODULES=-M../src
 FLAGS=--fast
 
-all: test
+all: mad mlp core
 
 mad: gbssl-test.chpl
 	$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o gbssl-test $<
@@ -14,8 +14,8 @@ mad: gbssl-test.chpl
 	rm gbssl-test
 
 
-test: mlp-test.chpl
-	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o mlp-test $<
+mlp: mlp-test.chpl
+	$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o mlp-test $<
 	./mlp-test
 	rm mlp-test
 

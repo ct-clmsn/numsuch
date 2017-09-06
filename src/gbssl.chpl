@@ -54,6 +54,11 @@ module GBSSL {
       iterate();
     }
 
+    proc fit(data: [], labels: LabelMatrix) {
+      // @TODO fill in the data matrix with labels.data, add a column
+      Y = LabelMatrix.data;
+    }
+
     /*
       We need three probabilities as each vertex for the MAD algo.
      */

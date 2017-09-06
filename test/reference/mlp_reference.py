@@ -3,6 +3,7 @@
 """
 
 import numpy as np
+import timeit
 
 #Input array
 X=np.array([[1,0,1,0],[1,0,1,1],[0,1,0,1]])
@@ -31,6 +32,7 @@ bh=np.random.uniform(size=(1,hiddenlayer_neurons))
 wout=np.random.uniform(size=(hiddenlayer_neurons,output_neurons))
 bout=np.random.uniform(size=(1,output_neurons))
 
+start = timeit.timeit()
 for i in range(epoch):
     #Forward Propogation
     hidden_layer_input1=np.dot(X,wh)
@@ -53,3 +55,7 @@ for i in range(epoch):
     bh += np.sum(d_hiddenlayer, axis=0,keepdims=True) *lr
 
 print output
+
+end = timeit.timeit()
+print("  elapsed time\t\t ")
+print(start - end)

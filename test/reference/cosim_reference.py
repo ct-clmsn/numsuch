@@ -28,7 +28,8 @@ def run():
             X[i,j] = c
             X[j,i] = c
     end = timeit.timeit()
-    print(" elapsed time in cosim loop %s" % end-start)
+    print(" elapsed time in cosim loop\n\t:" )
+    print(end-start)
 
 if __name__=="__main__":
     vector_file = "../data/webkb_vectors.mtx"
