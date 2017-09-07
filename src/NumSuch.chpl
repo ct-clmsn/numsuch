@@ -12,6 +12,7 @@
  */
 module NumSuch{
   use Core,
+      GBSSL,
       LinearAlgebra;
 
   proc main() {
