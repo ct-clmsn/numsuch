@@ -16,4 +16,9 @@ labels: labelmatrix-from-file.chpl
 cos: cosineDistance.chpl
 	$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o cos $<
 	./cos
-	rm cos	
+	rm cos
+
+madkb: webkbExample.chpl
+	$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o mwkb $<
+	./mwkb
+	rm mwkb

@@ -66,19 +66,6 @@ var y = Matrix(
   [0,0,0]
   );
 
-
-//var labelFile = "data/webkb_labels.txt";
-//var vectorFile = "data/webkb_vectors.mtx";
-//var L = new LabelMatrix();
-//L.readFromFile(fn=labelFile, addDummy=true);
-//writeln(L.names);
-
-//var W = mmread(real, vectorFile);
-// this takes 5 hours on my laptop, holy cow.
-//var V = cosineDistance(W);
-
-
-
 /*
  Test build the model from a matrix
  */
