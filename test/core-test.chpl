@@ -38,13 +38,29 @@ var V = cosineDistance(X);
 t.stop();
 writeln("  elapsed time %n".format(t.elapsed()));
 
+writeln("cosineSimilarity(X,X)");
+t.start();
+var V2 = cosineSimilarity(X);
+t.stop();
+writeln(V2);
+writeln("  elapsed time %n".format(t.elapsed()));
+
 
 writeln("cosineDistance(X,Y)");
 t.start();
-var V2 = cosineDistance(X,Y);
-writeln(V2);
+var V3 = cosineDistance(X,Y);
+writeln(V3);
 t.stop();
 writeln("  elapsed time %n".format(t.elapsed()));
+
+writeln("cosineSimilarity(X,Y)");
+t.start();
+var V4 = cosineSimilarity(X,Y);
+writeln(V4);
+t.stop();
+writeln("  elapsed time %n".format(t.elapsed()));
+
+
 
 // Test LabelMatrix.fromMatrix()
 var L = new LabelMatrix();
