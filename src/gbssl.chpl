@@ -12,6 +12,13 @@ module GBSSL {
       Time,
       Core;
 
+  config const mu1: real,
+               mu2: real,
+               mu3: real,
+               beta: real,
+               epsilon: real,
+               epochs: int;
+
   class ModifiedAdsorptionModel {
     var vcount: range,
         vdom: domain(1),
@@ -28,11 +35,8 @@ module GBSSL {
         pabdn: [vdom] real,
         pinj : [vdom] real,
         compiled: bool = false,
-        beta: real = 1.1,
         Yhat: [ldom] real,           // The matrix of predicted labels
         R: [ldom] real = 0.0,        // The regularization matrix, 0 or pabdn
-        mu1, mu2, mu3: real = 0.33,
-        epsilon: real = 0.05,
         Mvv: [vdom] real;
 
     /*
@@ -56,7 +60,7 @@ module GBSSL {
 
     proc fit(data: [], labels: LabelMatrix) {
       // @TODO fill in the data matrix with labels.data, add a column
-      Y = LabelMatrix.data;
+      Y = labels.data;
     }
 
     /*
@@ -82,6 +86,7 @@ module GBSSL {
         gdom = {vcount, vcount};
         var xd = data.domain;
         ref Xd = A.reindex(xd);
+        [i in vdom] A[i,i] = 0.0;
         for ij in data.domain {
           // @TODO: Make this W instead with diag(W) = 0;
           if data[ij] > 0 && ij[1] != ij[2] {
@@ -102,6 +107,7 @@ module GBSSL {
       ldom = {vcount, 1..labels.shape[2]};
       Y = labels;
       ldom = {vcount, 1..labels.shape[2]+1};
+      writeln("Y \n",Y);
     }
     /*
       Find the 3 probs for each vertex
@@ -115,11 +121,12 @@ module GBSSL {
         // Set R for unlabeled vertices
         pabdn[v] = ps[3];
         if max reduce Y[v,..] < 0.1 {
-          writeln("  unlabeled vertex! ", Y[v,..]);
+          //writeln("  unlabeled vertex! ", Y[v,..]);
           R[v,R.shape[2]] = pabdn[v];
         }
 
       }
+      writeln("R\n", R);
     }
 
     /*
@@ -130,21 +137,22 @@ module GBSSL {
        // No need to remove the diagonal from the expressions m and l below
        var m: real = + reduce A[i,..];
        rowSum[i] = m;
+
        var l = + reduce xlogx(A[i,..]);
        var h = max(log(rowSum[i]) - l / rowSum[i],0);
        var c = log(beta) / (log(beta + h));
-       var d = (1- c)* sqrt(h);
+       var d: real = 0;
+       if max reduce Y[i,..] > 0.1 {
+         d = (1- c)* sqrt(h);
+       }
        var z = max(c+d, 1);
-       //writeln(" cell probabilities (%n, %n, %n)".format(c/z, d/z, 1-(c+d)/z));
+       writeln(" cell probabilities (%n, %n, %n)".format(c/z, d/z, 1-(c+d)/z));
        return (c/z, d/z, 1-c-d);
      }
 
      proc iterate() {
        var t: Timer;
        t.start();
-       mu1 = 0.33;
-       mu2 = 0.33;
-       mu3 = 0.33;
        /*
          Initialize Yhat and Mvv once
         */
@@ -153,20 +161,28 @@ module GBSSL {
            Mvv[v] = mu1 * pinj[v] + mu2 * pcont[v] * rowSum[v] + mu3;
        }
        // Now start the iterations.
-       var err = 1.0;
-       var itr = 0;
-       for v in vdom {
-         do {
-           err += -.1;
-           itr += 1;
-           var Dv = calcDv(v);
-           for v in vdom {
-             Yhat[v,..] = 1/Mvv[v] * (mu1 * pinj[v] * Y[v,..] + mu2 * Dv + mu3 * pabdn[v] * R[v,..]) ;
-             writeln(" Yhat[v,..] ", Yhat[v,..]);
+       var Dv: [Yhat.domain] real;
+       const yones: [Yhat.domain] real = 1.0;
+       var err: real = 100;
+       var itr: int = 0;
+       do {
+         // set up Dv = f(Yhat)
+         // There is a matrix for this, I'll get to it later.
+         for u in vdom {
+           var pu = pcont[u];
+           var s:[Yhat.domain.dim(2)] real = 0;
+           for x in vdom {
+             s += (pu * A[u,x] + pcont[x] * A[x,u]) * Yhat[x,..];
            }
-           //writeln("\tepoch (%n) error: %n ".format(itr, err));
-         } while (err > epsilon);
-       }
+           Dv[u,..] = s;
+         }
+         for v in vdom {
+          // Yhat update
+          
+          Yhat[v,..] = 1/Mvv[v] * (mu1 * pinj[v] * Y[v,..] + mu2 * Dv[v,..] + mu3 * pabdn[v] * R[v,..]);
+         }
+         itr += 1;
+       } while (epsilon > err && itr < epochs);
        t.stop();
        writeln("\telapsed time: %n".format(t.elapsed()));
      }

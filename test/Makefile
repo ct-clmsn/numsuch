@@ -10,7 +10,7 @@ all: mad mlp core
 
 mad: gbssl-test.chpl
 	$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o gbssl-test $<
-	./gbssl-test
+	./gbssl-test -f gbssl-test.input
 	rm gbssl-test
 
 
