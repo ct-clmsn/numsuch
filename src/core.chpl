@@ -10,9 +10,12 @@ module Core {
         names: [ldom] string;
     /*
     Loads a label file into a Matrix.  Labels should be binary indicators
+    useCols: use columns for the labels, as in an indicator for each column.
+             default is to have an integer representing the label
+             <TAB> separated
     <record id: string> <category 1 indicator> ... <category L indicator>
      */
-    proc readFromFile(fn: string, addDummy: bool = false) {
+    proc readFromFile(fn: string, addDummy: bool = false, useCols=false) {
       var lFile = open(fn, iomode.r).reader(),
           x: [1..0] real,
           nFields: int,
@@ -21,36 +24,51 @@ module Core {
           xline: [ldom] real,
           nRows: int = 1,
           firstLine: bool = true;
-      for line in lFile.lines() {
-         var fields = line.split("\t");
-         if firstLine {
-           nFields = fields.size;
-           if addDummy {
-             // Add a dummy column
-             ldom = {1..nFields};
+      if useCols {
+        for line in lFile.lines() {
+           var fields = line.split("\t");
+           if firstLine {
+             nFields = fields.size;
+             if addDummy {
+               // Add a dummy column
+               ldom = {1..nFields};
+             } else {
+               ldom = {1..nFields-1};
+             }
+             dataDom = {1..0, 1..nFields};
+             firstLine = false;
            } else {
-             ldom = {1..nFields-1};
+             if fields.size != nFields {
+               halt("Unequal number of fields in label file");
+             }
            }
-           dataDom = {1..0, 1..nFields};
-           firstLine = false;
-         } else {
-           if fields.size != nFields {
-             halt("Unequal number of fields in label file");
+           ldom = {1..ldom.last+1};
+           names[ldom.last] = fields[1];
+           dataDom = { 1..#nRows, ldom.dim(1)};
+           var xline: [ldom] real;
+           for v in 2..fields.size {
+             xline = fields[v]:real;
            }
+           data[dataDom.last(1), ..] = xline;
+           nRows += 1;
          }
-         //names.push_back(fields[1]);
-         //writeln(ldom);
-         ldom = {1..ldom.last+1};
-         //names.push_back(fields[1]);
-         names[ldom.last] = fields[1];
-         dataDom = { 1..#nRows, ldom.dim(1)};
-         var xline: [ldom] real;
-         for v in 2..fields.size {
-           xline = fields[v]:real;
+       } else {
+         // Getting integers for labels
+         ldom = {1..2};
+         var nLabels = 1;
+         for line in lFile.lines() {
+           ldom = {1..ldom.last+1};
+           dataDom = {1..ldom.last, 1..1};
+           var fields = line.split("\t");
+           names[ldom.last] = fields[1]:string;
+           if fields[2]:int > nLabels {
+             nLabels += 1;
+           }
+           data[dataDom.last(1), 1] = fields[2]:int;
+           //writeln(fields[1]);
+           nRows += 1;
          }
-         data[dataDom.last(1), ..] = xline;
-         nRows += 1;
-      }
+       }
     }
 
     proc fromMatrix(y:[]) {

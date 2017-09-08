@@ -1,14 +1,18 @@
 use NumSuch,
     LinearAlgebra,
     MatrixMarket,
+    Path,
     Time;
 
-var labelFile = "data/karate.mtx";
-var edgeFile = "data/kata-fac_edges.txt";
+var edgeFile = "data/karate.mtx";
+var labelFile= "data/karate-fac_labels.txt";
 
-var X = mmread(real, labelFile);
+var X = mmread(real, edgeFile);
 // Data in file is only sub-diagonal, so add back super
 X = matPlus(X,transpose(X));
-writeln(X);
+//writeln(X);
+var Y = new LabelMatrix();
+Y.readFromFile(labelFile);
+writeln("Y.data\n", Y.data);
 
 var model = new PeelPropagationModel();

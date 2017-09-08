@@ -1,4 +1,6 @@
 module PeelPropagation {
+  use Core;
+
   var epochs: int,      // Dr. Peel calls these "steps"
       alpha: real;      // damping factor
 
@@ -8,7 +10,7 @@ module PeelPropagation {
         Y: [ldom] real,      // Labels
         X: [dataDom] real;      // data
 
-    proc fit(X: [] real, Y:[] real ) {
+    proc fit(X: [] real, Y: LabelMatrix ) {
       writeln(" X.shape ", X.shape);
       writeln(" Y.shape ", Y.shape);
 
