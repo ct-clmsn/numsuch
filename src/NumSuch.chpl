@@ -12,6 +12,7 @@
  */
 module NumSuch{
   use Core,
+      PeelPropagation,
       LinearAlgebra;
 
   proc main() {

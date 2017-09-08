@@ -1,0 +1,102 @@
+%%MatrixMarket matrix coordinate real symmetric 
+%-------------------------------------------------------------------------------
+% UF Sparse Matrix Collection, Tim Davis
+% http://www.cise.ufl.edu/research/sparse/matrices/Newman/karate
+% name: Newman/karate
+% [Karate club, from Wayne Zachary, 1977]
+% id: 2399
+% date: 1977
+% author: W. Zachary
+% ed: M. Newman
+% fields: name title A id date author kind notes ed
+% kind: undirected graph
+%-------------------------------------------------------------------------------
+% notes:
+% Network collection from M. Newman                                          
+% http://www-personal.umich.edu/~mejn/netdata/                               
+%                                                                            
+% The graph "karate" contains the network of friendships between the 34      
+% members of a karate club at a US university, as described by Wayne Zachary 
+% in 1977.  If you use these data in your work, please cite W. W. Zachary, An
+% information flow model for conflict and fission in small groups, Journal of
+% Anthropological Research 33, 452-473 (1977).                               
+%-------------------------------------------------------------------------------
+34 34 78
+2 1 1.0
+3 1 1.0
+4 1 1.0
+5 1 1.0
+6 1 1.0
+7 1 1.0
+8 1 1.0
+9 1 1.0
+11 1 1.0
+12 1 1.0
+13 1 1.0
+14 1 1.0
+18 1 1.0
+20 1 1.0
+22 1 1.0
+32 1 1.0
+3 2 1.0
+4 2 1.0
+8 2 1.0
+14 2 1.0
+18 2 1.0
+20 2 1.0
+22 2 1.0
+31 2 1.0
+4 3 1.0
+8 3 1.0
+9 3 1.0
+10 3 1.0
+14 3 1.0
+28 3 1.0
+29 3 1.0
+33 3 1.0
+8 4 1.0
+13 4 1.0
+14 4 1.0
+7 5 1.0
+11 5 1.0
+7 6 1.0
+11 6 1.0
+17 6 1.0
+17 7 1.0
+31 9 1.0
+33 9 1.0
+34 9 1.0
+34 10 1.0
+34 14 1.0
+33 15 1.0
+34 15 1.0
+33 16 1.0
+34 16 1.0
+33 19 1.0
+34 19 1.0
+34 20 1.0
+33 21 1.0
+34 21 1.0
+33 23 1.0
+34 23 1.0
+26 24 1.0
+28 24 1.0
+30 24 1.0
+33 24 1.0
+34 24 1.0
+26 25 1.0
+28 25 1.0
+32 25 1.0
+32 26 1.0
+30 27 1.0
+34 27 1.0
+34 28 1.0
+32 29 1.0
+34 29 1.0
+33 30 1.0
+34 30 1.0
+33 31 1.0
+34 31 1.0
+33 32 1.0
+34 32 1.0
+34 33 1.0
