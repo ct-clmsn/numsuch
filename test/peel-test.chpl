@@ -13,7 +13,10 @@ X = matPlus(X,transpose(X));
 //writeln(X);
 var Y = new LabelMatrix();
 Y.readFromFile(labelFile);
-writeln("Y.data\n", Y.data);
+//writeln("Y.data\n", Y.data);
 
-var model = new PeelPropagationModel();
-model.fit(X,Y);
+var subY = subSampleLabels(Y, sampleSize=5, replacementMethod=labelReplacementType.inverseDegree);
+writeln("subY.data\n\t", subY.data);
+
+//var model = new PeelPropagationModel();
+//model.fit(X,subY);

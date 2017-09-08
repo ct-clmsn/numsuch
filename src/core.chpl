@@ -1,4 +1,6 @@
 module Core {
+  use Random;
+  enum labelReplacementType {none, inverseDegree};
 
   /*
    Class to hold labels for data.  Has names in names
@@ -6,8 +8,10 @@ module Core {
   class LabelMatrix {
     var ldom: domain(1) = {1..0},
         dataDom: domain(2),
+        nLabelValues: int = 0,       // How many different labels are there?
         data: [dataDom] real,
         names: [ldom] string;
+
     /*
     Loads a label file into a Matrix.  Labels should be binary indicators
     useCols: use columns for the labels, as in an indicator for each column.
@@ -68,6 +72,7 @@ module Core {
            dataDom = {ldom.dim(1), 1..nLabels};
            data[ldom.last, fields[2]:int] = 1;
          }
+         nLabelValues = nLabels;
        }
     }
 
@@ -78,7 +83,9 @@ module Core {
       for ij in y.domain {
         tmpD[ij] = y[ij];
       }
+      nLabelValues = y.shape[2];
     }
+
   }
 
   /*
@@ -153,5 +160,27 @@ module Core {
       }
     }
     return cosDist;
+  }
+
+  /*
+   */
+  proc subSampleLabels(L: LabelMatrix, sampleSize: int
+      , replacementMethod: labelReplacementType = labelReplacementType.none) {
+    var M = L;
+    M.data = L.data;
+    //writeln("M.data.domain\n\t", M.data.domain);
+    writeln("M.ldom\n\t", M.ldom);
+    var ids = [i in M.ldom] i;
+    writeln(ids);
+    shuffle(ids);
+    for i in sampleSize+1..ids.size{
+      writeln(" replacments coming");
+      if replacementMethod ==  labelReplacementType.none {
+        M.data[ids[i],..] = 0;
+      } else if replacementMethod == labelReplacementType.inverseDegree {
+        M.data[ids[i],..] = 1.0 / L.nLabelValues;
+      }
+    }
+    return M;
   }
 }
