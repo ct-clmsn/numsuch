@@ -19,6 +19,7 @@ core: core-test.chpl
 	rm core-test
 
 peel: peel-test.chpl
-	$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o peel-test $<
+	#$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o peel-test $<
+	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o peel-test $<
 	./peel-test
 	rm peel-test

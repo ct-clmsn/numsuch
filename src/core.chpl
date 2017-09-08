@@ -53,20 +53,20 @@ module Core {
            nRows += 1;
          }
        } else {
-         // Getting integers for labels
-         ldom = {1..2};
+         // Getting integers for labels, then expanding to columns as new values arise
+         ldom = {1..0};
+         dataDom = {1..ldom.last, 1..1};
          var nLabels = 1;
          for line in lFile.lines() {
            ldom = {1..ldom.last+1};
-           dataDom = {1..ldom.last, 1..1};
            var fields = line.split("\t");
            names[ldom.last] = fields[1]:string;
            if fields[2]:int > nLabels {
              nLabels += 1;
+             //writeln("..new label %n".format(fields[2]));
            }
-           data[dataDom.last(1), 1] = fields[2]:int;
-           //writeln(fields[1]);
-           nRows += 1;
+           dataDom = {ldom.dim(1), 1..nLabels};
+           data[ldom.last, fields[2]:int] = 1;
          }
        }
     }

@@ -16,3 +16,4 @@ Y.readFromFile(labelFile);
 writeln("Y.data\n", Y.data);
 
 var model = new PeelPropagationModel();
+model.fit(X,Y);

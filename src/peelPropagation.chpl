@@ -10,9 +10,11 @@ module PeelPropagation {
         Y: [ldom] real,      // Labels
         X: [dataDom] real;      // data
 
-    proc fit(X: [] real, Y: LabelMatrix ) {
-      writeln(" X.shape ", X.shape);
-      writeln(" Y.shape ", Y.shape);
+    proc fit(X: [] real, L: LabelMatrix ) {
+      writeln(" X.domain", X.domain);
+      writeln(" L.data.domain", L.data.domain);
+
+      // Now proceed to do explicitly one calculation
 
     }
   }
