@@ -2,5 +2,5 @@ mu1=1.0
 mu2=0.01
 mu3=0.001
 epsilon=0.00005
-epochs=1000
+epochs=10
 beta=1.2

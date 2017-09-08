@@ -157,15 +157,18 @@ module GBSSL {
          Initialize Yhat and Mvv once
         */
        Yhat = Y;
+       var Yprev: [Yhat.domain] real = 0.0;
        for v in vdom {
            Mvv[v] = mu1 * pinj[v] + mu2 * pcont[v] * rowSum[v] + mu3;
        }
+       writeln("Mvv\n", Mvv);
        // Now start the iterations.
        var Dv: [Yhat.domain] real;
        const yones: [Yhat.domain] real = 1.0;
        var err: real = 100;
        var itr: int = 0;
        do {
+         Yprev = Yhat;
          // set up Dv = f(Yhat)
          // There is a matrix for this, I'll get to it later.
          for u in vdom {
@@ -178,11 +181,18 @@ module GBSSL {
          }
          for v in vdom {
           // Yhat update
-          
+
           Yhat[v,..] = 1/Mvv[v] * (mu1 * pinj[v] * Y[v,..] + mu2 * Dv[v,..] + mu3 * pabdn[v] * R[v,..]);
+          //Yhat[v,..] = Mvv[v] * (mu1 * pinj[v] * Y[v,..] + mu2 * Dv[v,..] + mu3 * pabdn[v] * R[v,..]);
          }
          itr += 1;
-       } while (epsilon > err && itr < epochs);
+         err = max reduce(abs(matMinus(Yhat, Yprev)));
+         writeln("\t\t(epsilon, epoch) = (%n, %n)".format(epsilon, epochs));
+         writeln("\t\t(itr, err) = (%n,%n)".format(itr, err));
+       //} while (epsilon > err && itr < epochs);
+       //} while (err > 0.2);
+       } while (itr < epochs);
+       writeln("\t(itr, err) = (%n,%n)".format(itr, err));
        t.stop();
        writeln("\telapsed time: %n".format(t.elapsed()));
      }
