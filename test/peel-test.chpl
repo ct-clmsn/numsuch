@@ -19,4 +19,5 @@ var subY = subSampleLabels(Y, sampleSize=5, replacementMethod=labelReplacementTy
 //writeln("subY.data\n\t", subY.data);
 
 var model = new PeelPropagationModel();
-model.fit(X,subY);
+var preds = model.fit(X,subY);
+writeln(preds);

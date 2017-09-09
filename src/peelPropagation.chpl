@@ -26,7 +26,7 @@ module PeelPropagation {
         compile(X, L);
       }
       // Now proceed to do explicitly one calculation
-      iterate();
+      return iterate();
     }
     proc compile(X: [] real, L:LabelMatrix) {
       prepareY(L);
@@ -37,27 +37,25 @@ module PeelPropagation {
       [i in X.domain.dim(2)] sqs[i] = (rowSums[i]+1e-05)** -.5;
       D = diag(sqs);
       Lnorm = dot(D, dot(X,D));
-      //writeln(rowSums);
-      //writeln(sqs);
-      //writeln(ds);
-      //writeln(Lnorm);
       compiled = true;
     }
 
+    /*
+     This is here mostly to conform to previous models, but may not be needed
+     */
     proc prepareY(L: LabelMatrix) {
-      //writeln(" this.ldom ", this.ldom);
-      //writeln(" Y domain ", Y.domain);
-      //writeln(" L.ldom ", L.ldom);
       Y = L.data;
     }
 
+    /*
+     Runs the iterations and returns the predictions
+     */
     proc iterate() {
       var F: [Y.domain] real = Y,      // The current prediction, called F by Dr. Peel
           Fold: [Y.domain] real = -1.0;
       var err: real = 1.0;
       var e = 0;
       do {
-        writeln("\tepoch %n".format(e));
         for s in 1..steps {
           F = dot(Lnorm.T, F);
         }
@@ -68,9 +66,8 @@ module PeelPropagation {
         writeln("  epoch %n  error %n".format(e, err));
       } while (e < epochs && err > epsilon);
       var predictions: [ldom] int;
-      [i in ldom] predictions[i] = argmax(F[i,..]);
-      writeln("predictions\n", predictions);
-
+      [i in ldom.dim(1)] predictions[i, argmax(F[i,..])] = 1;
+      return predictions;
     }
   }
 }
