@@ -18,5 +18,5 @@ Y.readFromFile(labelFile);
 var subY = subSampleLabels(Y, sampleSize=5, replacementMethod=labelReplacementType.inverseDegree);
 //writeln("subY.data\n\t", subY.data);
 
-//var model = new PeelPropagationModel();
-//model.fit(X,subY);
+var model = new PeelPropagationModel();
+model.fit(X,subY);

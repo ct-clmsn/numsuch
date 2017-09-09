@@ -168,13 +168,9 @@ module Core {
       , replacementMethod: labelReplacementType = labelReplacementType.none) {
     var M = L;
     M.data = L.data;
-    //writeln("M.data.domain\n\t", M.data.domain);
-    writeln("M.ldom\n\t", M.ldom);
     var ids = [i in M.ldom] i;
-    writeln(ids);
     shuffle(ids);
     for i in sampleSize+1..ids.size{
-      writeln(" replacments coming");
       if replacementMethod ==  labelReplacementType.none {
         M.data[ids[i],..] = 0;
       } else if replacementMethod == labelReplacementType.inverseDegree {
