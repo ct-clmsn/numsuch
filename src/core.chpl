@@ -180,7 +180,7 @@ module Core {
     return M;
   }
 
-  proc argmax(x: [] real) {
+  proc argmax1d(x:[]) {
     var idx: int = 1,
         currentMax: real = x[1];
     for i in x.domain {
@@ -191,4 +191,53 @@ module Core {
     }
     return idx;
   }
+
+
+  /*
+   axis = 0: argmax over whole object array (default)
+          1: argmax for every row
+          2: argmax for every column
+
+   returns: tuple.  In the case of axis=0 this is the (i,j) coordinate of the max.
+   */
+
+  proc argmax(x: [], axis:int = 0 ) {
+    //writeln(x.domain);
+    //writeln(x.shape.size);
+    var idom: domain(1) = {1..1};
+    var idx: [idom] int;
+    if x.shape.size == 1 {
+      return argmax1d(x);
+    } else if x.shape.size == 2 && axis==1 {
+      idom = {1..#x.shape[1]};
+      for i in x.domain.dim(1) {
+        var y: [x.domain.dim(1)] real = x[i,..];
+        idx[i] = argmax1d(y);
+      }
+      //writeln(idx);
+      return idx;
+    } else if  x.shape.size == 2 && axis==2 {
+      idom = {1..#x.shape[2]};
+      for j in x.domain.dim(2) {
+        var y: [x.domain.dim(2)] real = x[..,j];
+        idx[j] = argmax1d(y);
+      }
+      //writeln(idx);
+      return idx;
+    } else if x.shape.size == 2 && axis==0 {
+      idom = {1..2};
+      idx = (0,0);
+      var currentMax: real = x[1,1];
+      for (i,j) in x.domain {
+        if x[i,j] > currentMax {
+          idx = (i,j);
+          currentMax = x[i,j];
+        }
+      }
+      return idx;
+    } else {
+      halt("cannot resolve input dimension!");
+    }
+  }
+
 }

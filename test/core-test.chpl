@@ -52,6 +52,12 @@ writeln("Loading L from matrix.");
 L.fromMatrix(Y);
 writeln(L.data);
 
-var v: [1..3] real = [1.1, 3.3, 2.2];
-var a = argmax(v);
-writeln(" argmax: %n".format(a));
+
+var x: [1..3] real = [1.1, 3.3, 2.2];
+var y: [1..3,1..3] real = ((1,0,0), (0,0,2), (0,3,0));
+writeln(y);
+writeln("argmax x: ", argmax(x));
+writeln("argmax axis=?: ", argmax(y));
+writeln("argmax axis=0: ", argmax(y, axis=0));
+writeln("argmax axis=1: ", argmax(y, axis=1));
+writeln("argmax axis=2: ", argmax(y, axis=2));
