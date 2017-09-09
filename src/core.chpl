@@ -179,4 +179,16 @@ module Core {
     }
     return M;
   }
+
+  proc argmax(x: [] real) {
+    var idx: int = 1,
+        currentMax: real = x[1];
+    for i in x.domain {
+      if x[i] > currentMax {
+        currentMax = x[i];
+        idx = i;
+      }
+    }
+    return idx;
+  }
 }

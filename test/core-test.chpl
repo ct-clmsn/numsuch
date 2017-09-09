@@ -51,3 +51,7 @@ var L = new LabelMatrix();
 writeln("Loading L from matrix.");
 L.fromMatrix(Y);
 writeln(L.data);
+
+var v: [1..3] real = [1.1, 3.3, 2.2];
+var a = argmax(v);
+writeln(" argmax: %n".format(a));

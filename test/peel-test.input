@@ -1,0 +1,4 @@
+alpha=0.1
+epochs=5
+epsilon=1e-6
+steps=2
