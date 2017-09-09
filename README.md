@@ -15,6 +15,8 @@ Hopefully we can get the algorithms documented in the [tex](tex/) directory.  Tr
 Because it works. I'm finding myself laughing out loud at 2 AM saying "I can't believe that worked the first time!".  And it feels like the love child of Python (mom) and Fortran (dad), the two greatest languages
 ever invented.
 
+I find the [Cheat Sheet](http://chapel.cray.com/docs/master/_downloads/quickReference.pdf) pretty useful, now that someone finally told me about it... Ben...
+
 ## NNModels
 
 Algorithms are based on Section 6.5 of "Deep Learning" by Goodfellow, Bengio and Courville.  See 1st Ed. page 202

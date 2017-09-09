@@ -1,18 +1,26 @@
 module Core {
+  use Random;
+  enum labelReplacementType {none, inverseDegree};
 
   /*
    Class to hold labels for data.  Has names in names
    */
   class LabelMatrix {
     var ldom: domain(1) = {1..0},
-        dataDom: domain(2),
+        dataDom: domain(2),                         // # records X # distinct labels
+        nLabelValues: int = 0,                      // How many different labels are there?
         data: [dataDom] real,
-        names: [ldom] string;
+        names: [ldom] string,
+        trainingLabelDom: sparse subdomain(ldom);   // Which labels are training labels, for error analysis
+
     /*
     Loads a label file into a Matrix.  Labels should be binary indicators
+    useCols: use columns for the labels, as in an indicator for each column.
+             default is to have an integer representing the label
+             <TAB> separated
     <record id: string> <category 1 indicator> ... <category L indicator>
      */
-    proc readFromFile(fn: string, addDummy: bool = false) {
+    proc readFromFile(fn: string, addDummy: bool = false, useCols=false) {
       var lFile = open(fn, iomode.r).reader(),
           x: [1..0] real,
           nFields: int,
@@ -21,36 +29,52 @@ module Core {
           xline: [ldom] real,
           nRows: int = 1,
           firstLine: bool = true;
-      for line in lFile.lines() {
-         var fields = line.split("\t");
-         if firstLine {
-           nFields = fields.size;
-           if addDummy {
-             // Add a dummy column
-             ldom = {1..nFields};
+      if useCols {
+        for line in lFile.lines() {
+           var fields = line.split("\t");
+           if firstLine {
+             nFields = fields.size;
+             if addDummy {
+               // Add a dummy column
+               ldom = {1..nFields};
+             } else {
+               ldom = {1..nFields-1};
+             }
+             dataDom = {1..0, 1..nFields};
+             firstLine = false;
            } else {
-             ldom = {1..nFields-1};
+             if fields.size != nFields {
+               halt("Unequal number of fields in label file");
+             }
            }
-           dataDom = {1..0, 1..nFields};
-           firstLine = false;
-         } else {
-           if fields.size != nFields {
-             halt("Unequal number of fields in label file");
+           ldom = {1..ldom.last+1};
+           names[ldom.last] = fields[1];
+           dataDom = { 1..#nRows, ldom.dim(1)};
+           var xline: [ldom] real;
+           for v in 2..fields.size {
+             xline = fields[v]:real;
            }
+           data[dataDom.last(1), ..] = xline;
+           nRows += 1;
          }
-         //names.push_back(fields[1]);
-         //writeln(ldom);
-         ldom = {1..ldom.last+1};
-         //names.push_back(fields[1]);
-         names[ldom.last] = fields[1];
-         dataDom = { 1..#nRows, ldom.dim(1)};
-         var xline: [ldom] real;
-         for v in 2..fields.size {
-           xline = fields[v]:real;
+       } else {
+         // Getting integers for labels, then expanding to columns as new values arise
+         ldom = {1..0};
+         dataDom = {1..ldom.last, 1..1};
+         var nLabels = 1;
+         for line in lFile.lines() {
+           ldom = {1..ldom.last+1};
+           var fields = line.split("\t");
+           names[ldom.last] = fields[1]:string;
+           if fields[2]:int > nLabels {
+             nLabels += 1;
+             //writeln("..new label %n".format(fields[2]));
+           }
+           dataDom = {ldom.dim(1), 1..nLabels};
+           data[ldom.last, fields[2]:int] = 1;
          }
-         data[dataDom.last(1), ..] = xline;
-         nRows += 1;
-      }
+         nLabelValues = nLabels;
+       }
     }
 
     proc fromMatrix(y:[]) {
@@ -60,7 +84,9 @@ module Core {
       for ij in y.domain {
         tmpD[ij] = y[ij];
       }
+      nLabelValues = y.shape[2];
     }
+
   }
 
   /*
@@ -135,5 +161,86 @@ module Core {
       }
     }
     return cosDist;
+  }
+
+  /*
+   */
+  proc subSampleLabels(L: LabelMatrix, sampleSize: int
+      , replacementMethod: labelReplacementType = labelReplacementType.none) {
+    var M = new LabelMatrix();
+    M.ldom = L.ldom;
+    M.dataDom = L.dataDom;
+    [ij in L.dataDom] M.data[ij] = L.data[ij];
+    var ids = [i in M.ldom] i;
+    shuffle(ids);
+    for i in sampleSize+1..ids.size{
+      if replacementMethod ==  labelReplacementType.none {
+        M.data[ids[i],..] = 0;
+      } else if replacementMethod == labelReplacementType.inverseDegree {
+        M.data[ids[i],..] = 1.0 / L.nLabelValues;
+      }
+      M.trainingLabelDom += ids[i];
+    }
+    return M;
+  }
+
+  proc argmax1d(x:[]) {
+    var idx: int = 1,
+        currentMax: real = x[1];
+    for i in x.domain {
+      if x[i] > currentMax {
+        currentMax = x[i];
+        idx = i;
+      }
+    }
+    return idx;
+  }
+
+
+  /*
+   axis = 0: argmax over whole object array (default)
+          1: argmax for every row
+          2: argmax for every column
+
+   returns: tuple.  In the case of axis=0 this is the (i,j) coordinate of the max.
+   */
+
+  proc argmax(x: [], axis:int = 0 ) {
+    //writeln(x.domain);
+    //writeln(x.shape.size);
+    var idom: domain(1) = {1..1};
+    var idx: [idom] int;
+    if x.shape.size == 1 {
+      return argmax1d(x);
+    } else if x.shape.size == 2 && axis==1 {
+      idom = {1..#x.shape[1]};
+      for i in x.domain.dim(1) {
+        var y: [x.domain.dim(1)] real = x[i,..];
+        idx[i] = argmax1d(y);
+      }
+      //writeln(idx);
+      return idx;
+    } else if  x.shape.size == 2 && axis==2 {
+      idom = {1..#x.shape[2]};
+      for j in x.domain.dim(2) {
+        var y: [x.domain.dim(2)] real = x[..,j];
+        idx[j] = argmax1d(y);
+      }
+      //writeln(idx);
+      return idx;
+    } else if x.shape.size == 2 && axis==0 {
+      idom = {1..2};
+      idx = (0,0);
+      var currentMax: real = x[1,1];
+      for (i,j) in x.domain {
+        if x[i,j] > currentMax {
+          idx = (i,j);
+          currentMax = x[i,j];
+        }
+      }
+      return idx;
+    } else {
+      halt("cannot resolve input dimension!");
+    }
   }
 }

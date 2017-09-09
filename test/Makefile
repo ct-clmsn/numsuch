@@ -17,3 +17,9 @@ core: core-test.chpl
 	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o core-test $<
 	./core-test
 	rm core-test
+
+peel: peel-test.chpl
+	#$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o peel-test $<
+	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o peel-test $<
+	./peel-test -f peel-test.input
+	rm peel-test
