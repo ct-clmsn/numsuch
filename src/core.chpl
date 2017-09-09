@@ -7,10 +7,11 @@ module Core {
    */
   class LabelMatrix {
     var ldom: domain(1) = {1..0},
-        dataDom: domain(2),
-        nLabelValues: int = 0,       // How many different labels are there?
+        dataDom: domain(2),                         // # records X # distinct labels
+        nLabelValues: int = 0,                      // How many different labels are there?
         data: [dataDom] real,
-        names: [ldom] string;
+        names: [ldom] string,
+        trainingLabelDom: sparse subdomain(ldom);   // Which labels are training labels, for error analysis
 
     /*
     Loads a label file into a Matrix.  Labels should be binary indicators
@@ -166,8 +167,10 @@ module Core {
    */
   proc subSampleLabels(L: LabelMatrix, sampleSize: int
       , replacementMethod: labelReplacementType = labelReplacementType.none) {
-    var M = L;
-    M.data = L.data;
+    var M = new LabelMatrix();
+    M.ldom = L.ldom;
+    M.dataDom = L.dataDom;
+    [ij in L.dataDom] M.data[ij] = L.data[ij];
     var ids = [i in M.ldom] i;
     shuffle(ids);
     for i in sampleSize+1..ids.size{
@@ -176,6 +179,7 @@ module Core {
       } else if replacementMethod == labelReplacementType.inverseDegree {
         M.data[ids[i],..] = 1.0 / L.nLabelValues;
       }
+      M.trainingLabelDom += ids[i];
     }
     return M;
   }
@@ -239,5 +243,4 @@ module Core {
       halt("cannot resolve input dimension!");
     }
   }
-
 }

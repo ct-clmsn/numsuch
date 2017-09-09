@@ -8,28 +8,22 @@ module PeelPropagation {
                epsilon: real;    // convergence criteria
 
   class PeelPropagationModel {
-    var ldom: domain(2),
+    var ldom: domain(1),          // As long as the number of labels
         dataDom: domain(2),
-        Y: [ldom] real,         // Labels
-        X: [dataDom] real,      // data
-        D: [dataDom] real,      // Diagonal matrix
-        Lnorm: [dataDom] real,  // normalized matrix
+        D: [dataDom] real,        // Diagonal matrix
+        Lnorm: [dataDom] real,    // normalized matrix
+        Predictions: LabelMatrix = new LabelMatrix(), // The output of "fit()"
         compiled: bool =false;
 
     proc fit(X: [] real, L: LabelMatrix ) {
-      //writeln(" X.domain", X.domain);
-      //writeln(" L.data.domain", L.data.domain);
       dataDom = X.domain;
-      this.X = X;
-      this.ldom = L.data.domain;
       if !compiled {
         compile(X, L);
       }
       // Now proceed to do explicitly one calculation
-      return iterate();
+      return iterate(L);
     }
-    proc compile(X: [] real, L:LabelMatrix) {
-      prepareY(L);
+    proc compile(X:[] real, L: LabelMatrix) {
       // @TODO make this simpler.
       var rowSums: [X.domain.dim(2)] real;
       var sqs: [X.domain.dim(2)] real;
@@ -40,34 +34,42 @@ module PeelPropagation {
       compiled = true;
     }
 
-    /*
-     This is here mostly to conform to previous models, but may not be needed
-     */
-    proc prepareY(L: LabelMatrix) {
-      Y = L.data;
-    }
 
     /*
      Runs the iterations and returns the predictions
      */
-    proc iterate() {
-      var F: [Y.domain] real = Y,      // The current prediction, called F by Dr. Peel
-          Fold: [Y.domain] real = -1.0;
+    proc iterate(L: LabelMatrix) {
+      var F: [L.data.domain] real = L.data,      // The current prediction, called F by Dr. Peel
+          Fold: [L.data.domain] real = -1.0;
       var err: real = 1.0;
       var e = 0;
       do {
         for s in 1..steps {
           F = dot(Lnorm.T, F);
         }
-        F = (1-alpha) * Y + alpha * F;
+        F = (1-alpha) * L.data + alpha * F;
         err = + reduce abs(matMinus(F, Fold));
         e += 1;
         Fold = F;
-        writeln("  epoch %n  error %n".format(e, err));
+        //writeln("  epoch %n  error %n".format(e, err));
       } while (e < epochs && err > epsilon);
-      var predictions: [ldom] int;
-      [i in ldom.dim(1)] predictions[i, argmax(F[i,..])] = 1;
-      return predictions;
+      Predictions.dataDom = L.dataDom;
+      Predictions.trainingLabelDom = L.trainingLabelDom;
+      [i in L.ldom] Predictions.data[i,argmax(F[i,..])] = 1;
+      return Predictions;
     }
+  }
+
+  /*
+   Calculates error on unlabled data
+   */
+  proc calculateError(Ygold: LabelMatrix, Ypred: LabelMatrix) {
+    var mm: [Ypred.dataDom] real = abs(matMinus(Ygold.data, Ypred.data));
+    var e = 0.0;
+    for s in Ypred.trainingLabelDom {
+      e += + reduce mm[s,..];
+    }
+    e = 1 - e / Ypred.trainingLabelDom.size;
+    return e;
   }
 }
