@@ -61,3 +61,14 @@ writeln("argmax axis=?: ", argmax(y));
 writeln("argmax axis=0: ", argmax(y, axis=0));
 writeln("argmax axis=1: ", argmax(y, axis=1));
 writeln("argmax axis=2: ", argmax(y, axis=2));
+
+writeln("testing Jacobi");
+var J: [{1..4,1..4}] real = (
+  (4, -30, 60, -35),
+  (-30, 300, -675, 420),
+  (60, -675, 1620, -1050),
+  (-35, 420, -1050, 700)
+  );
+var r = jacobi(J);
+
+writeln(findPivots(J));

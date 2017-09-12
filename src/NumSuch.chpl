@@ -12,6 +12,7 @@
  */
 module NumSuch{
   use Core,
+      Jacobi,
       PeelPropagation,
       LinearAlgebra;
 
