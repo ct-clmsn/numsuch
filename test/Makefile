@@ -23,3 +23,9 @@ peel: peel-test.chpl
 	#$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o peel-test $<
 	./peel-test -f peel-test.input
 	rm peel-test
+
+jacobi: jacobi-test.chpl
+	#$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o peel-test $<
+	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o jacobi-test $<
+	./jacobi-test
+	rm jacobi-test
