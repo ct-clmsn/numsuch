@@ -249,6 +249,8 @@ module Core {
   /*
   Code snippet provided by Ben Albrecht until Chapel supports 2D sorting
   2D sort wrapper using temp array
+
+  Ben would like you to know this is going to be slower than molasses going uphill in January...
    */
   proc sort2D(A: [?D] ?t, axis=1, reversed=false) {
     const (rows, cols) = A.shape;
