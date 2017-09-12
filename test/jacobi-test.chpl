@@ -12,7 +12,7 @@ var J: [{1..4,1..4}] real = (
 var t: Timer;
 t.start();
 var r = jacobi(J);
-writeln(findPivots(J));
+writeln("pivots(J)\n", findPivots(J));
 
 t.stop();
 writeln("  elapsed time %n".format(t.elapsed()));

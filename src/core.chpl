@@ -1,5 +1,6 @@
 module Core {
-  use Random;
+  use Random,
+      Sort;
   enum labelReplacementType {none, inverseDegree};
 
   /*
@@ -243,5 +244,42 @@ module Core {
       halt("cannot resolve input dimension!");
     }
   }
+
+
+  /*
+  Code snippet provided by Ben Albrecht until Chapel supports 2D sorting
+  2D sort wrapper using temp array
+   */
+  proc sort2D(A: [?D] ?t, axis=1, reversed=false) {
+    const (rows, cols) = A.shape;
+
+    // array of arrays
+    var tmp: [D.dim(1)] [D.dim(2)] t;
+    for row in D.dim(1) {
+      tmp[row] = A[row, ..];
+    }
+    var cmp = new Comparator2D(axis, reversed);
+    sort(tmp, comparator=cmp);
+
+    for row in D.dim(1) {
+      A[row, ..] = tmp[row];
+      }
+  }
+
+  /*
+  Supports sort2D routine
+   */
+  record Comparator2D {
+    const axis = 1,
+    reversed = false;
+
+    proc key(a) {
+      if reversed then
+      return -a[axis];
+      else
+      return a[axis];
+    }
+  }
+
 
 }
