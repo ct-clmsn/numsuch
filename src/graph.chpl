@@ -304,8 +304,6 @@
          // Pass 2: populate.
          //forall trip in triples {
          forall (u,v) in A.domain {
-           //var u = trip.from;
-           //var v = trip.to;
            var w = A[u,v];
            // edge from u to v will be represented in both u and v's edge
            // lists
