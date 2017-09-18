@@ -278,24 +278,57 @@
                          initialLastAvail=0);
        var next$: [vertices] atomic int;
 
-       // Set number of edges per node
-       forall v in vertices {
-         next$[v].write(G.initialFirstAvail);
-         //writeln("row ",v, " has nonzero ");
-         // There should be a way to bulk add, but I don't want to mess with it just yet.
-         var t = 0;
-         for c in A.domain.dimIter(2,v) do {
-           t = t+1;
-           next$[v].add(1, memory_order_relaxed);
-           G.Row[v].ndom = {G.initialFirstAvail..t};
-           G.Row[v].neighborList[t] = (c,);
-         }
-         //writeln(" row ", v, " nnzs: ", t);
-       }
-       // Do the symmetric bit
+       // Set number of edges per node, copying logic above but with a matrix
        if !directed {
          forall v in vertices {
-            // hmmm
+           next$[v].write(G.initialFirstAvail);
+         }
+         // Increase the domain size at the right nodes
+         for (u,v) in A.domain {
+           var w = A[u,v];
+           // edge from u to v will be represented in both u and v's edge
+           // lists
+           next$[u].add(1, memory_order_relaxed);
+           next$[v].add(1, memory_order_relaxed);
+         }
+         // resize the edge lists
+         forall v in vertices {
+           var min = G.initialFirstAvail;
+           var max = next$[v].read(memory_order_relaxed) - 1;
+           G.Row[v].ndom = {min..max};
+         }
+         // reset all of the counters.
+         forall x in next$ {
+           next$.write(G.initialFirstAvail, memory_order_relaxed);
+         }
+         // Pass 2: populate.
+         //forall trip in triples {
+         forall (u,v) in A.domain {
+           //var u = trip.from;
+           //var v = trip.to;
+           var w = A[u,v];
+           // edge from u to v will be represented in both u and v's edge
+           // lists
+           var uslot = next$[u].fetchAdd(1, memory_order_relaxed);
+           var vslot = next$[v].fetchAdd(1, memory_order_relaxed);
+           G.Row[u].neighborList[uslot] = (v,);
+           G.Row[v].neighborList[vslot] = (u,);
+         }
+       }
+
+       // In this case just run along the rows, since no symmetry
+       if directed {
+         forall v in vertices {
+           next$[v].write(G.initialFirstAvail);
+           // There should be a way to bulk add, but I don't want to mess with it just yet.
+           var t = 0;
+           for c in A.domain.dimIter(2,v) do {
+             t = t+1;
+             next$[v].add(1, memory_order_relaxed);
+             G.Row[v].ndom = {G.initialFirstAvail..t};
+             G.Row[v].neighborList[t] = (c,);
+           }
+           //writeln(" row ", v, " nnzs: ", t);
          }
        }
 
