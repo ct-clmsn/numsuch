@@ -13,6 +13,7 @@
 module NumSuch{
   use Core,
       PeelPropagation,
+      Graph,
       LinearAlgebra;
 
   proc main() {
