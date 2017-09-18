@@ -23,8 +23,8 @@
        // nle = Neighbor List Element.
        //
 
-       //type nleType = (nodeIdType, edgeWeightType);
-       type nleType = (nodeIdType,);
+       type nleType = (nodeIdType, edgeWeightType);
+       //type nleType = (nodeIdType,);
        var ndom = {initialFirstAvail..initialLastAvail};
        var neighborList: [ndom] nleType;
        var last = 0;
@@ -268,8 +268,6 @@
       */
      proc buildFromSparseMatrix(A: [], param weighted:bool, param directed:bool) {
        const n = max reduce A.shape;
-       writeln("A domain ", A.shape);
-       writeln("n verts ", n);
 
        const vertices: domain(1) = {1..n};
        var G = new Graph(nodeIdType = int.type,
@@ -309,8 +307,8 @@
            // lists
            var uslot = next$[u].fetchAdd(1, memory_order_relaxed);
            var vslot = next$[v].fetchAdd(1, memory_order_relaxed);
-           G.Row[u].neighborList[uslot] = (v,);
-           G.Row[v].neighborList[vslot] = (u,);
+           G.Row[u].neighborList[uslot] = (v,w);
+           G.Row[v].neighborList[vslot] = (u,w);
          }
        }
 
@@ -324,9 +322,8 @@
              t = t+1;
              next$[v].add(1, memory_order_relaxed);
              G.Row[v].ndom = {G.initialFirstAvail..t};
-             G.Row[v].neighborList[t] = (c,);
+             G.Row[v].neighborList[t] = (c,A[v,c]);
            }
-           //writeln(" row ", v, " nnzs: ", t);
          }
        }
 
