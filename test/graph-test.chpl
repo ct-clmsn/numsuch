@@ -18,25 +18,25 @@ SD += (6,7); A[6,7] = 1;
 SD += (6,8); A[6,8] = 1;
 SD += (7,8); A[7,8] = 1;
 
-writeln("DIRECTED");
+writeln("** DIRECTED");
 var G = buildFromSparseMatrix(A, weighted=false, directed=true);
 for v in G.vertices {
-  writeln(" vertex ", v, "  #neighbors ", G.Row[v].neighborList);
+  writeln("  vertex ", v, "  #neighbors ", G.Row[v].neighborList);
 }
 
-writeln("UNDIRECTED");
+writeln("** UNDIRECTED");
 var H = buildFromSparseMatrix(A, weighted=false, directed=false);
 for v in H.vertices {
-  writeln(" vertex ", v, "  #neighbors ", H.Row[v].neighborList);
-  writeln(" vertex domain ", H.vertices);
+  writeln("  vertex ", v, "  #neighbors ", H.Row[v].neighborList);
+  writeln("  vertex domain ", H.vertices);
 }
 
-writeln("SUBGRAPH");
+writeln("** SUBGRAPH ENTROPY");
 H = buildFromSparseMatrix(A, weighted=false, directed=false);
 var sud: sparse subdomain(H.vertices);
 sud += 1;
 sud += 2;
 sud += 3;
 sud += 4;
-var S = subgraphEntropy(H, sud);
-writeln("  subgraph ", S);
+var entropy = subgraphEntropy(H, sud);
+writeln("   Subgraph Energy: ", entropy);

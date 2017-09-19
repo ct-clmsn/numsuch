@@ -332,29 +332,46 @@
 
      proc subgraphEntropy(G: Graph, verts: domain) {
        var subgraph: [verts] G.Row.eltType,
-           pints: [verts] real = 0,                // Internal edge weights per vertex
-           pttls: [verts] real = 0,                // Total edge weight per vertex
+           adjdom = verts,                         // Will hold the ids of all nodes adjacent to verts
+           pints: [adjdom] real = 0,                // Internal edge weights per vertex
+           pttls: [adjdom] real = 0,                // Total edge weight per vertex
            entropy: real = 0;
 
+       /*
+       Going to need to clean this up to one loop or so
+        */
        for s in verts {
-         subgraph[s] = G.Row[s];
-         writeln("  neighborList ", s, " -> ", G.Row[s].neighborList);
-         for nv in G.Row[s].neighborList.domain {
-           if verts.member( G.Row[s].neighborList[nv][1]) {
-             pints[s] += G.Row[s].neighborList[nv][2];
-             writeln(" INTERIOR EDGE ", s, " -> ", G.Row[s].neighborList[nv][1]);
-           } else {
-             writeln(" EXTERNAL EDGE ", s, " -> ", G.Row[s].neighborList[nv][1]);
+         var me = G.Row[s];
+         var e = vertexLocalEntropy(me, verts);
+         for nv in G.Row[s].neighborList {
+           if !verts.member(nv[1]) && !adjdom.member(nv[1]) {
+             // Don't calculate it again
+             adjdom += nv[1];
+             //writeln(" current adjdom: ", adjdom);
+             var r = G.Row[nv[1]];
+             // Break this out to its own variable for now to see if calcs are right
+             var f = vertexLocalEntropy(r, verts);
+             //writeln(" Vertex: ", nv[1], " Energy: ", e);
+             e += f;
            }
-           pttls[s] += G.Row[s].neighborList[nv][2];
          }
-       }
-       for s in verts {
-         var n = pints[s]/pttls[s];
-         var e = xlog2x(pints[s]/pttls[s]) + xlog2x(1 - pints[s]/pttls[s]);
-         writeln(" vertex: ", s, " n: ", n, " entropy: ", e);
-         entropy -= xlog2x(pints[s]/pttls[s]) + xlog2x(1 - pints[s]/pttls[s]);
+         //writeln(" Vertex: ", s, " Energy: ", e);
+         entropy -= e;
        }
        return entropy;
+     }
+
+     proc vertexLocalEntropy(v: VertexData, interior: domain) {
+       var interiorWeight:real = 0,
+           totalWeight:real = 0;
+
+       for n in v.neighborList {
+         if interior.member(n[1]) {
+           //writeln(" LOCALS ONLY, BRO! ", n, " -> ", n[1]);
+           interiorWeight += n[2];
+         }
+         totalWeight += n[2];
+       }
+       return xlog2x(interiorWeight/totalWeight) + xlog2x(1-interiorWeight/totalWeight);
      }
  }
