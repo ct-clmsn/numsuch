@@ -1,44 +1,6 @@
 use NumSuch,
     LayoutCS;
 
-//var g = new Graph();
-
-
-// Graph Entropy Graph
-/*
-var Pairs: domain((int, int));
-Pairs += (1,2);
-Pairs += (1,4);
-Pairs += (1,5);
-writeln(Pairs);
-
-record Triple {
-  var from: int(32);
-  var to: int(32);
-  proc weight return 1:int(32);
-}
-
-
-var triples: [domain(1)] Triple;
-triples += new Triple(1,2);
-triples += new Triple(1,3);
-triples += new Triple(1,4);
-triples += new Triple(2,3);
-
-var max_nid: int;
-max_nid = max reduce [r in triples] max(r.from, r.to);
-
-var G = buildUndirectedGraph(triples, false, {1..max_nid} );
- */
-
- /*
-const vertices: domain(1) = {1..5};
-var G = new Graph(nodeIdType = int,
-                  edgeWeightType = real,
-                  vertices = vertices,
-                  initialLastAvail=0);
-  */
-
 // See slide 5 of http://web.ecs.baylor.edu/faculty/cho/Cho-Entropy.pdf for visual
 var nv: int = 8,
     D: domain(2) = {1..nv, 1..nv},
@@ -66,4 +28,15 @@ writeln("UNDIRECTED");
 var H = buildFromSparseMatrix(A, weighted=false, directed=false);
 for v in H.vertices {
   writeln(" vertex ", v, "  #neighbors ", H.Row[v].neighborList);
+  writeln(" vertex domain ", H.vertices);
 }
+
+writeln("SUBGRAPH");
+H = buildFromSparseMatrix(A, weighted=false, directed=false);
+var sud: sparse subdomain(H.vertices);
+sud += 1;
+sud += 2;
+sud += 3;
+sud += 4;
+var S = subgraphEntropy(H, sud);
+writeln("  subgraph ", S);

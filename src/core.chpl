@@ -243,4 +243,12 @@ module Core {
       halt("cannot resolve input dimension!");
     }
   }
+
+  proc xlog2x(x: real) {
+    if x > 0 {
+      return x * log2(x);
+    } else {
+      return 0;
+    }
+  }
 }

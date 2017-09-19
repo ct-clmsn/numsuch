@@ -5,6 +5,7 @@
  */
 
  module Graph {
+   use Core;
 
      //
      // VertexData: stores the neighbor list of a vertex.
@@ -326,7 +327,34 @@
            }
          }
        }
-
        return G;
+     }
+
+     proc subgraphEntropy(G: Graph, verts: domain) {
+       var subgraph: [verts] G.Row.eltType,
+           pints: [verts] real = 0,                // Internal edge weights per vertex
+           pttls: [verts] real = 0,                // Total edge weight per vertex
+           entropy: real = 0;
+
+       for s in verts {
+         subgraph[s] = G.Row[s];
+         writeln("  neighborList ", s, " -> ", G.Row[s].neighborList);
+         for nv in G.Row[s].neighborList.domain {
+           if verts.member( G.Row[s].neighborList[nv][1]) {
+             pints[s] += G.Row[s].neighborList[nv][2];
+             writeln(" INTERIOR EDGE ", s, " -> ", G.Row[s].neighborList[nv][1]);
+           } else {
+             writeln(" EXTERNAL EDGE ", s, " -> ", G.Row[s].neighborList[nv][1]);
+           }
+           pttls[s] += G.Row[s].neighborList[nv][2];
+         }
+       }
+       for s in verts {
+         var n = pints[s]/pttls[s];
+         var e = xlog2x(pints[s]/pttls[s]) + xlog2x(1 - pints[s]/pttls[s]);
+         writeln(" vertex: ", s, " n: ", n, " entropy: ", e);
+         entropy -= xlog2x(pints[s]/pttls[s]) + xlog2x(1 - pints[s]/pttls[s]);
+       }
+       return entropy;
      }
  }
