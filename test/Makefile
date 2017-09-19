@@ -23,3 +23,9 @@ peel: peel-test.chpl
 	#$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o peel-test $<
 	./peel-test -f peel-test.input
 	rm peel-test
+
+graph: graph-test.chpl
+	#$(CC) $(FLAGS) $(MODULES) $(INCLUDES) $(LIBS) -o peel-test $<
+	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o graph-test $<
+	./graph-test
+	rm graph-test
