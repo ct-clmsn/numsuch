@@ -11,6 +11,10 @@ usually available as `Buddha314` in one or both during the day.
 We are striving to conform to the Chapel conventions, so please review the Chapel [Contributing Guide](https://github.com/chapel-lang/chapel/blob/master/.github/CONTRIBUTING.md)
 as well
 
+## Style Guide
+
+Until [this ticket](https://github.com/chapel-lang/chapel/issues/7417) is closed, please refer to [this issue](https://github.com/chapel-lang/chapel/issues/6698)
+
 Now, on to the boilerplate...
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
