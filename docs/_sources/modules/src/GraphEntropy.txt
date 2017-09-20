@@ -1,0 +1,44 @@
+.. default-domain:: chpl
+
+.. module:: GraphEntropy
+   :synopsis: Behold, the Graph Entropy Module.  A nice introduction to this idea is
+
+GraphEntropy
+============
+**Usage**
+
+.. code-block:: chapel
+
+   use GraphEntropy;
+
+
+Behold, the Graph Entropy Module.  A nice introduction to this idea is
+available from `Dr. Cho at Baylor University <http://web.ecs.baylor.edu/faculty/cho/Cho-Entropy.pdf>`_
+
+.. function:: proc subgraphEntropy(G: Graph, verts: domain)
+
+   
+   Find the entropy of a given subgraph
+   
+
+.. function:: proc vertexLocalEntropy(v: VertexData, interior: domain)
+
+   
+     Finds the entropy around a specific vertex by calculating the total weight of
+     the interior and exterior edges, then applying a log multinomial
+   
+   .. math::
+     x^2
+   
+      
+
+.. function:: proc minimalSubGraph(G: Graph, interior: domain)
+
+   
+   Try to find the smallest graph to express this set of nodes, eliminating ones that
+   don't add entropy
+   
+   :param G: The parent Graph object
+   :param interior: The vertex ids for the subgraph in question
+   
+

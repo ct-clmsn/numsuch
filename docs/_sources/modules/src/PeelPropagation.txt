@@ -1,0 +1,42 @@
+.. default-domain:: chpl
+
+.. module:: PeelPropagation
+
+PeelPropagation
+===============
+**Usage**
+
+.. code-block:: chapel
+
+   use PeelPropagation;
+
+.. class:: PeelPropagationModel
+
+   .. attribute:: var ldom: domain(1)
+
+   .. attribute:: var dataDom: domain(2)
+
+   .. attribute:: var D: [dataDom] real
+
+   .. attribute:: var Lnorm: [dataDom] real
+
+   .. attribute:: var Predictions: LabelMatrix = new LabelMatrix()
+
+   .. attribute:: var compiled: bool = false
+
+   .. method:: proc fit(X: [] real, L: LabelMatrix)
+
+   .. method:: proc compile(X: [] real, L: LabelMatrix)
+
+   .. method:: proc iterate(L: LabelMatrix)
+
+      
+      Runs the iterations and returns the predictions
+      
+
+.. function:: proc calculateError(Ygold: LabelMatrix, Ypred: LabelMatrix)
+
+   
+   Calculates error on unlabled data
+   
+

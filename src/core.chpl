@@ -35,7 +35,6 @@ module Core {
            if firstLine {
              nFields = fields.size;
              if addDummy {
-               // Add a dummy column
                ldom = {1..nFields};
              } else {
                ldom = {1..nFields-1};

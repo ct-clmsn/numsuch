@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>NumSuch &mdash; chpldoc 0.0.1 documentation</title>
+  <title>GraphEntropy &mdash; chpldoc 0.0.1 documentation</title>
   
 
   
@@ -31,8 +31,8 @@
 
   
     <link rel="top" title="chpldoc 0.0.1 documentation" href="../../index.html"/>
-        <link rel="next" title="PeelPropagation" href="PeelPropagation.html"/>
-        <link rel="prev" title="NN" href="NN.html"/> 
+        <link rel="next" title="NN" href="NN.html"/>
+        <link rel="prev" title="chpldoc documentation" href="../../index.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -85,9 +85,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">chpldoc documentation</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="GraphEntropy.html">GraphEntropy</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">GraphEntropy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="NN.html">NN</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">NumSuch</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NumSuch.html">NumSuch</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PeelPropagation.html">PeelPropagation</a></li>
 </ul>
 
@@ -119,11 +119,11 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../../index.html">Docs</a> &raquo;</li>
       
-    <li>NumSuch</li>
+    <li>GraphEntropy</li>
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../../_sources/modules/src/NumSuch.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/modules/src/GraphEntropy.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -133,22 +133,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <span class="target" id="module-NumSuch"></span><div class="section" id="numsuch">
-<h1>NumSuch<a class="headerlink" href="#numsuch" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="module-GraphEntropy"></span><div class="section" id="graphentropy">
+<h1>GraphEntropy<a class="headerlink" href="#graphentropy" title="Permalink to this headline">¶</a></h1>
 <p><strong>Usage</strong></p>
-<div class="highlight-chapel"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">NumSuch</span><span class="p">;</span>
+<div class="highlight-chapel"><div class="highlight"><pre><span></span><span class="k">use</span> <span class="nx">GraphEntropy</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>View NumSuch <a class="reference external" href="https://github.com/buddha314/numsuch">on Github</a></p>
-<p>It would be fun to do some math! But not yet I guess</p>
-<p>Let&#8217;s try out a code block:</p>
-<div class="highlight-chapel"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">d</span><span class="p">:</span> <span class="k">domain</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="o">..</span><span class="mi">71</span><span class="p">};</span>
-</pre></div>
-</div>
+<p>Behold, the Graph Entropy Module.  A nice introduction to this idea is
+available from <a class="reference external" href="http://web.ecs.baylor.edu/faculty/cho/Cho-Entropy.pdf">Dr. Cho at Baylor University</a></p>
 <dl class="function">
-<dt id="NumSuch.main">
-<em class="property">proc </em><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#NumSuch.main" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="GraphEntropy.subgraphEntropy">
+<em class="property">proc </em><code class="descname">subgraphEntropy</code><span class="sig-paren">(</span><em>G: Graph</em>, <em>verts: domain</em><span class="sig-paren">)</span><a class="headerlink" href="#GraphEntropy.subgraphEntropy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the entropy of a given subgraph</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="GraphEntropy.vertexLocalEntropy">
+<em class="property">proc </em><code class="descname">vertexLocalEntropy</code><span class="sig-paren">(</span><em>v: VertexData</em>, <em>interior: domain</em><span class="sig-paren">)</span><a class="headerlink" href="#GraphEntropy.vertexLocalEntropy" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div>Finds the entropy around a specific vertex by calculating the total weight of
+the interior and exterior edges, then applying a log multinomial</div></blockquote>
+<div class="math">
+\[x^2\]</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="GraphEntropy.minimalSubGraph">
+<em class="property">proc </em><code class="descname">minimalSubGraph</code><span class="sig-paren">(</span><em>G: Graph</em>, <em>interior: domain</em><span class="sig-paren">)</span><a class="headerlink" href="#GraphEntropy.minimalSubGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to find the smallest graph to express this set of nodes, eliminating ones that
+don&#8217;t add entropy</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>G</strong> &#8211; The parent Graph object</li>
+<li><strong>interior</strong> &#8211; The vertex ids for the subgraph in question</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 
@@ -159,10 +185,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="PeelPropagation.html" class="btn btn-neutral float-right" title="PeelPropagation" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="NN.html" class="btn btn-neutral float-right" title="NN" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="NN.html" class="btn btn-neutral" title="NN" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../../index.html" class="btn btn-neutral" title="chpldoc documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
