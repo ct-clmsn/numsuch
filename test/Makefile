@@ -29,3 +29,8 @@ graph: graph-test.chpl
 	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o graph-test $<
 	./graph-test
 	rm graph-test
+
+entropy: entropy-test.chpl
+	$(CC) $(MODULES) $(INCLUDES) $(LIBS) -o entropy-test $<
+	./entropy-test
+	rm entropy-test

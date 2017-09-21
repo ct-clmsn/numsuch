@@ -46,7 +46,7 @@ module GraphEntropy {
   the interior and exterior edges, then applying a log multinomial
 
 .. math::
-  x^2
+  e = p_{interior} log (p_{interior}) + p_{exterior} log (p_{exterior})
 
    */
   proc vertexLocalEntropy(v: VertexData, interior: domain) {
@@ -71,6 +71,8 @@ module GraphEntropy {
     :param interior: The vertex ids for the subgraph in question
    */
   proc minimalSubGraph(G: Graph, interior: domain) {
-    return 0;
+    var current_entropy = subgraphEntropy(G, interior);
+    writeln("  current entropy: ", current_entropy);
+    return current_entropy;
   }
 }

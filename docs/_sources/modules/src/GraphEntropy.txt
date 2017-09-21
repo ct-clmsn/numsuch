@@ -28,7 +28,7 @@ available from `Dr. Cho at Baylor University <http://web.ecs.baylor.edu/faculty/
      the interior and exterior edges, then applying a log multinomial
    
    .. math::
-     x^2
+     e = p_{interior} log p_{interior}
    
       
 
