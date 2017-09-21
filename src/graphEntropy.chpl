@@ -51,12 +51,12 @@ module GraphEntropy {
    */
   proc vertexLocalEntropy(v: VertexData, interior: domain) {
     var interiorWeight:real = 0,
-       totalWeight:real = 0;
+        totalWeight:real = 0;
 
     for n in v.neighborList {
       if interior.member(n[1]) {
-       //writeln(" LOCALS ONLY, BRO! ", n, " -> ", n[1]);
-       interiorWeight += n[2];
+        //writeln(" LOCALS ONLY, BRO! ", n, " -> ", n[1]);
+        interiorWeight += n[2];
       }
       totalWeight += n[2];
     }
@@ -71,21 +71,53 @@ module GraphEntropy {
     :param interior: The vertex ids for the subgraph in question
    */
   proc minimalSubGraph(G: Graph, interior: domain) {
-    var currentEntropy = subgraphEntropy(G, interior);
-    var currentDomain = interior;
+    var currentEntropy = subgraphEntropy(G, interior),
+        currentDomain = interior,
+        minimalDomain = interior,
+        initialNode = G.Row[interior.first];
 
-    var initialNode = G.Row[interior.first];
-
-    for n in interior {
-      writeln("  nid: ", G.Row[n].nid);
-      //if G.Row[n].neighborList.size > initialNode.neighborList.size {
-      if G.Row[n].numNeighbors() > initialNode.numNeighbors() {
-        initialNode = G.Row[n];
-        writeln("   setting intial node to ", initialNode.nid);
-        writeln("   vertex: ", n, " degree: ", initialNode.numNeighbors());
+    do {
+      writeln("   currentDomain, ", currentDomain);
+      var topDog = G.Row[currentDomain.first];
+      for n in currentDomain {
+        //writeln("\tchecking ", n);
+        if G.Row[n].numNeighbors() > topDog.numNeighbors() {
+          topDog = G.Row[n];
+          writeln("\tsetting pivot node to ", topDog.nid);
+          writeln("\tvertex: ", n, " degree: ", topDog.numNeighbors());
+        }
       }
-    }
-    writeln("  current entropy: ", currentEntropy);
+
+      for n in topDog.neighborList {
+        var d = interior;
+        // Switch the state of the neighbor
+        //writeln("\t\tswitching ", n, " in ", d);
+        if d.member(n[1]) {
+          d -= n[1];
+          var e = subgraphEntropy(G, d);
+          //writeln("\t\tinterior: ", d, "  energy: ", e);
+          if e < currentEntropy {
+            writeln("\t\tremoving ", n[1], " from interior lowers entropy to ", e);
+            minimalDomain -= n[1];
+            currentEntropy = e;
+          }
+        } else {
+          d += n[1];
+          var e = subgraphEntropy(G, d);
+          //writeln("\t\tinterior: ", d, "  energy: ", e);
+          if e < currentEntropy {
+            writeln("\t\tadding ", n[1], " to interior lowers entropy to ", e);
+            minimalDomain += n[1];
+            currentEntropy = e;
+          }
+        }
+      }
+
+      currentDomain -= topDog.nid;
+    } while currentDomain.size > 0;
+
+    writeln("FINAL entropy: ", currentEntropy, "  minimalDomain: ", minimalDomain);
     return currentEntropy;
   }
+
 }

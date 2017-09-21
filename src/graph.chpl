@@ -30,8 +30,9 @@
        var neighborList: [ndom] nleType;
        var last = 0;
 
-       param nid = 1;  // TODO: Assign a vertex id
-       param weight = 2;
+       var nid: int;
+       //param nid = 1;  // TODO: Assign a vertex id
+       var weight: real;
 
        proc numNeighbors()  return ndom.numIndices;
  /*
@@ -123,7 +124,7 @@
          writeln("  GOOD ONE, INIT?");
          this.vertices = vertices;
        }
-        */ 
+        */
 
        /* iterate over all neighbor (ID, weight) pairs
           (actually returns an iterable rather than being
@@ -289,6 +290,7 @@
        if !directed {
          forall v in vertices {
            next$[v].write(G.initialFirstAvail);
+           G.Row[v].nid = v;
          }
          // Increase the domain size at the right nodes
          for (u,v) in A.domain {
@@ -325,6 +327,7 @@
        if directed {
          forall v in vertices {
            next$[v].write(G.initialFirstAvail);
+           G.Row[v].nid = v;
            // There should be a way to bulk add, but I don't want to mess with it just yet.
            var t = 0;
            for c in A.domain.dimIter(2,v) do {

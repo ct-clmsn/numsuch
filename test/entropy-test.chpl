@@ -19,11 +19,14 @@ SD += (7,8); A[7,8] = 1;
 
 writeln("** SUBGRAPH ENTROPY");
 var G = buildFromSparseMatrix(A, weighted=false, directed=false);
+//var G = buildFromSparseMatrix(A, weighted=false, directed=true);
 var sud: sparse subdomain(G.vertices);
 sud += 1;
 sud += 2;
 sud += 3;
 sud += 4;
+sud += 5;
+sud += 6;
 var entropy = subgraphEntropy(G, sud);
 writeln("   Subgraph Energy: ", entropy);
 
