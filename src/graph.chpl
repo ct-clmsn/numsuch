@@ -30,7 +30,7 @@
        var neighborList: [ndom] nleType;
        var last = 0;
 
-       param nid = 1;
+       param nid = 1;  // TODO: Assign a vertex id
        param weight = 2;
 
        proc numNeighbors()  return ndom.numIndices;
@@ -108,6 +108,7 @@
        type edgeWeightType = int(64);
 
        const vertices; // generic type - domain of vertices
+       //var vertices: domain(1); // generic type - domain of vertices
 
        param initialFirstAvail = 1;
        param initialLastAvail = 1;
@@ -116,6 +117,13 @@
                                       edgeWeightType,
                                       initialFirstAvail, initialLastAvail);
        var num_edges = -1;
+
+       /*
+       proc init(vertices: domain) {
+         writeln("  GOOD ONE, INIT?");
+         this.vertices = vertices;
+       }
+        */ 
 
        /* iterate over all neighbor (ID, weight) pairs
           (actually returns an iterable rather than being

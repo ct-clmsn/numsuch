@@ -71,8 +71,21 @@ module GraphEntropy {
     :param interior: The vertex ids for the subgraph in question
    */
   proc minimalSubGraph(G: Graph, interior: domain) {
-    var current_entropy = subgraphEntropy(G, interior);
-    writeln("  current entropy: ", current_entropy);
-    return current_entropy;
+    var currentEntropy = subgraphEntropy(G, interior);
+    var currentDomain = interior;
+
+    var initialNode = G.Row[interior.first];
+
+    for n in interior {
+      writeln("  nid: ", G.Row[n].nid);
+      //if G.Row[n].neighborList.size > initialNode.neighborList.size {
+      if G.Row[n].numNeighbors() > initialNode.numNeighbors() {
+        initialNode = G.Row[n];
+        writeln("   setting intial node to ", initialNode.nid);
+        writeln("   vertex: ", n, " degree: ", initialNode.numNeighbors());
+      }
+    }
+    writeln("  current entropy: ", currentEntropy);
+    return currentEntropy;
   }
 }
