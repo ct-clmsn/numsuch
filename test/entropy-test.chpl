@@ -26,8 +26,8 @@ sud += 2;
 sud += 3;
 sud += 4;
 sud += 5;
-sud += 6;
 var entropy = subgraphEntropy(G, sud);
 writeln("   Subgraph Energy: ", entropy);
 
-var min_ent = minimalSubGraph(G, sud);
+var minEnt = minimalSubGraph(G, sud);
+writeln("** FINAL entropy: ", minEnt[1], "  minimalDomain: ", minEnt[2]);

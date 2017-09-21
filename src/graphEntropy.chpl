@@ -116,8 +116,7 @@ module GraphEntropy {
       currentDomain -= topDog.nid;
     } while currentDomain.size > 0;
 
-    writeln("FINAL entropy: ", currentEntropy, "  minimalDomain: ", minimalDomain);
-    return currentEntropy;
+    return (currentEntropy, minimalDomain);
   }
 
 }
