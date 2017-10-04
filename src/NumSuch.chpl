@@ -14,6 +14,7 @@ module NumSuch{
   use Core,
       PeelPropagation,
       Graph,
+      GraphEntropy,
       LinearAlgebra;
 
   proc main() {
